@@ -1,0 +1,240 @@
+{
+  "name": "AI Teaching Studio - Lesson Generator",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ed61bab8-8804-423a-bf8b-ee688109f1ea",
+              "leftValue": "={{ $json.body.subject }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "a5d22315-5f9a-4264-a17c-7544a60fa74f",
+              "leftValue": "={{ $json.body.topic }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "5e8af739-f2b8-4d40-9c2d-cec6ae389ae2",
+              "leftValue": "={{ $json.body.topic.length }}",
+              "rightValue": 200,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "479b9464-ed20-4ed7-a39d-603f0a9f2b02",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"IMPORTANT LANGUAGE INSTRUCTION:\\nGenerate ALL content entirely in {{ $('Webhook1').item.json.body.language }}.\\nIf Hindi → Devanagari script. If Tamil → Tamil script. If Telugu → Telugu script. If Kannada → Kannada script. If Marathi → Devanagari (Marathi). Do not mix English with the target language.\\n\\nYou are an expert curriculum designer with 15 years of experience. Create a complete, classroom-ready lesson kit.\\n\\nCONTEXT:\\n- Subject: {{ $('Webhook1').item.json.body.subject }}\\n- Grade Level: {{ $('Webhook1').item.json.body.grade }}\\n- Topic: {{ $('Webhook1').item.json.body.topic }}\\n- Class Duration: {{ $('Webhook1').item.json.body.duration }} minutes\\n- Learning Objectives: {{ $('Webhook1').item.json.body.objectives }}\\n- Output Language: {{ $('Webhook1').item.json.body.language }}\\n\\nQUALITY STANDARDS:\\n1. Content must be age-appropriate and curriculum-aligned for the grade level.\\n2. Bloom's Taxonomy: warm-up = remember/understand, activity = apply/analyze, homework = evaluate/create.\\n3. Worksheet: exactly 4 Easy, 4 Medium, 3 Hard questions. Easy = recall, Medium = application, Hard = analysis/synthesis.\\n4. Quiz: exactly 5 MCQs (A/B/C/D, one correct answer only), exactly 3 short-answer questions.\\n5. MCQ distractors must be plausible — no obviously wrong answers.\\n6. Answer key must be 100% accurate and complete.\\n7. Quiz rubric must match the quiz total exactly: 5 MCQs x 1 mark = 5 marks, plus 3 short-answer questions x 2 marks = 6 marks, total 11 marks. Include clear 0/1/2 mark descriptors for short answers.\\n\\nReturn ONLY valid JSON (no markdown, no backticks, no preamble, no explanation). Structure:\\n{\\n  \\\"lesson_plan\\\": {\\n    \\\"warm_up\\\": \\\"A 5-minute engaging starter activity\\\",\\n    \\\"concepts\\\": [\\\"Concept 1: full explanation\\\", \\\"Concept 2: full explanation\\\", \\\"Concept 3: full explanation\\\"],\\n    \\\"activity\\\": \\\"Detailed 20-minute hands-on classroom activity with steps\\\",\\n    \\\"recap\\\": \\\"3-4 key takeaways for students to remember\\\",\\n    \\\"homework\\\": \\\"A specific take-home task with clear instructions\\\"\\n  },\\n  \\\"worksheet\\\": {\\n    \\\"easy\\\": [{\\\"question\\\": \\\"string\\\", \\\"answer\\\": \\\"string\\\"}],\\n    \\\"medium\\\": [{\\\"question\\\": \\\"string\\\", \\\"answer\\\": \\\"string\\\"}],\\n    \\\"hard\\\": [{\\\"question\\\": \\\"string\\\", \\\"answer\\\": \\\"string\\\"}]\\n  },\\n  \\\"quiz\\\": {\\n    \\\"mcq\\\": [{\\\"question\\\": \\\"string\\\", \\\"options\\\": [\\\"A. option\\\", \\\"B. option\\\", \\\"C. option\\\", \\\"D. option\\\"], \\\"correct\\\": \\\"A\\\"}],\\n    \\\"short_answer\\\": [{\\\"question\\\": \\\"string\\\", \\\"answer\\\": \\\"string\\\", \\\"points\\\": 2}]\\n  },\\n  \\\"quiz_rubric\\\": \\\"Full quiz grading rubric: total 11 marks. MCQs: 5 questions x 1 mark = 5 marks. Short answers: 3 questions x 2 marks = 6 marks. Include clear grading descriptors for 0, 1, and 2 marks for each short-answer question.\\\"\\n}\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"responseMimeType\": \"application/json\",\n    \"temperature\": 0.7,\n    \"maxOutputTokens\": 4096\n  }\n}",
+        "options": {},
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        416,
+        -96
+      ],
+      "id": "b99fd8d4-97bb-4f8e-bf03-9df379a8470f",
+      "name": "HTTP Request",
+      "credentials": {
+        "googlePalmApi": {
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"error\": true,\n  \"message\": \"Invalid input. Please fill all required fields. Topic must be under 200 characters.\"\n}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        416,
+        96
+      ],
+      "id": "fbac15d9-325b-4b75-8b60-251a01230243",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "967460c5-0eb8-4407-b0e0-095200155d14",
+              "name": "lessonKit",
+              "value": "={{ JSON.parse($json.candidates[0].content.parts[0].text) }}",
+              "type": "object"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        624,
+        -96
+      ],
+      "id": "92b31c18-f713-42de-ad90-ba8312dac381",
+      "name": "lessonKit"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json.lessonKit) }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1040,
+        -96
+      ],
+      "id": "4df96051-3e99-484a-a9e5-221910fd314d",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "generate-lesson",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2942b6a2-4dc6-45b0-9028-1175cc595dc0",
+      "name": "Webhook1",
+      "webhookId": "234c5fcb-b625-45d0-aa34-33af8f41020d"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "lessonKit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "lessonKit": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "e6ac5fd7-4ebf-4678-bad9-68a5942e543c",
+  "meta": {
+    "instanceId": "4b8301ca2b2b3fa560dcd98180d93279b9bfc244d33142d2c88a85741da302ae"
+  },
+  "id": "0vZc41OAfNxduv3R",
+  "tags": []
+}

@@ -1,0 +1,16 @@
+# Environment files
+.env
+.env.*
+!.env.example
+.dev.vars
+
+# Node / build artifacts
+node_modules/
+dist/
+build/
+coverage/
+
+# Editors
+.vscode/
+.idea/
+.DS_Store

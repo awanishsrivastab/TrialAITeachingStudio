@@ -1,0 +1,125 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+@theme inline {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--ink);
+  --color-popover: var(--surface);
+  --color-popover-foreground: var(--ink);
+  --color-primary: var(--primary);
+  --color-primary-foreground: #ffffff;
+  --color-primary-dark: var(--primary-dark);
+  --color-accent: var(--accent);
+  --color-accent-foreground: #111827;
+  --color-secondary: #F3F4F6;
+  --color-secondary-foreground: var(--ink);
+  --color-muted: #F3F4F6;
+  --color-muted-foreground: var(--muted);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-destructive: var(--danger);
+  --color-destructive-foreground: #ffffff;
+  --color-border: var(--border);
+  --color-input: var(--border);
+  --color-ring: var(--primary);
+  --color-ink: var(--ink);
+  --color-surface: var(--surface);
+}
+
+:root {
+  --primary: #4F46E5;
+  --primary-dark: #3730A3;
+  --accent: #F59E0B;
+  --success: #10B981;
+  --danger: #EF4444;
+  --ink: #111827;
+  --muted: #6B7280;
+  --surface: #FFFFFF;
+  --bg: #F3F4F6;
+  --border: #E5E7EB;
+  --radius: 8px;
+}
+
+@layer base {
+  * { border-color: var(--border); }
+  html, body {
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body { line-height: 1.7; }
+  h1, h2, h3, h4, h5 { line-height: 1.25; font-weight: 700; }
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  .gradient-hero {
+    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+  }
+  .card-base {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    transition: box-shadow 200ms ease, transform 200ms ease;
+  }
+  .card-hover:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+  }
+  .mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+  .animate-fade-up {
+    animation: fadeUp 0.4s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-float {
+    animation: floatUp 8s ease-in-out infinite;
+  }
+  @keyframes floatUp {
+    0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
+    50% { transform: translateY(-14px) rotate(var(--rot, 0deg)); }
+  }
+  .animate-shimmer {
+    background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+  }
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  .flash-highlight {
+    animation: flash 1s ease;
+  }
+  @keyframes flash {
+    0% { background-color: rgba(79,70,229,0.15); }
+    100% { background-color: transparent; }
+  }
+}
+
+@media print {
+  body { background: white; font-family: Georgia, serif; color: black; font-size: 12pt; }
+  .no-print, nav, footer, button { display: none !important; }
+  .print-section { page-break-after: always; }
+}

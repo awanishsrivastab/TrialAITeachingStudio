@@ -1,0 +1,223 @@
+{
+  "name": "AI Teaching Studio - Section Regenerator",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "regenerate-section",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "dbafaaf6-fb7d-4330-9ae6-fc040b4bc9e4",
+      "name": "Webhook",
+      "webhookId": "0ab03008-5f86-4371-8899-9acb57d97bd7"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b79349b1-7ec7-4828-a99a-94ccef151276",
+              "leftValue": "={{ ['lesson_plan','worksheet','quiz','rubric','quiz_rubric'].includes($json.body.section) }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "7e436136-6997-45c3-9333-05823d84bded",
+              "leftValue": "={{ $json.body.topic }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "3e30a731-a52c-4e5e-aef0-b781ad8a32e9",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"You are an expert curriculum designer. Regenerate ONLY the {{ $json.body.section }} section for this lesson. Do not regenerate anything else.\\n\\nSubject:{{ $json.body.subject }} \\nGrade: {{ $json.body.grade }}\\nTopic: {{ $json.body.topic }}\\nLanguage: {{ $json.body.language }}\\n\\nSection to regenerate: {{ $json.body.section }}\\n\\nIf section is 'lesson_plan', return:\\n{\\\"lesson_plan\\\":{\\\"warm_up\\\":\\\"...\\\",\\\"concepts\\\":[\\\"...\\\"],\\\"activity\\\":\\\"...\\\",\\\"recap\\\":\\\"...\\\",\\\"homework\\\":\\\"...\\\"}}\\n\\nIf section is 'worksheet', return:\\n{\\\"worksheet\\\":{\\\"easy\\\":[{\\\"question\\\":\\\"...\\\",\\\"answer\\\":\\\"...\\\"}],\\\"medium\\\":[{\\\"question\\\":\\\"...\\\",\\\"answer\\\":\\\"...\\\"}],\\\"hard\\\":[{\\\"question\\\":\\\"...\\\",\\\"answer\\\":\\\"...\\\"}]}}\\n\\nIf section is 'quiz', return:\\n{\\\"quiz\\\":{\\\"mcq\\\":[{\\\"question\\\":\\\"...\\\",\\\"options\\\":[\\\"A. ...\\\",\\\"B. ...\\\",\\\"C. ...\\\",\\\"D. ...\\\"],\\\"correct\\\":\\\"A\\\"}],\\\"short_answer\\\":[{\\\"question\\\":\\\"...\\\",\\\"answer\\\":\\\"...\\\",\\\"points\\\":2}]}}\\n\\nIf section is 'rubric' or 'quiz_rubric', return:\\n{\\\"quiz_rubric\\\":\\\"Full 11-mark quiz grading rubric: MCQs 5 x 1 mark, short answers 3 x 2 marks with 0/1/2 mark descriptors\\\"}\\n\\nReturn ONLY valid JSON for that one section. No markdown, no backticks, no explanation.\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"responseMimeType\": \"application/json\",\n    \"temperature\": 0.8,\n    \"maxOutputTokens\": 2048\n  }\n}",
+        "options": {},
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        416,
+        -96
+      ],
+      "id": "bd165fee-a03d-4f00-8e63-d3cc92a1eb19",
+      "name": "Gemini - Section Only",
+      "credentials": {
+        "googlePalmApi": {
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ JSON.parse($json.candidates[0].content.parts[0].text) }}",
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        624,
+        -96
+      ],
+      "id": "817ad61f-5884-4d18-a2a4-c163bb22fa31",
+      "name": "regeneratedSection"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"error\": true, \"message\": \"Invalid section name. Use: lesson_plan, worksheet, quiz, rubric, or quiz_rubric\"}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        416,
+        96
+      ],
+      "id": "69082cfb-4713-4c82-b6af-9eed5536d7e0",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        832,
+        -96
+      ],
+      "id": "8d73e0d4-6d03-45ec-a0de-1d708b15967b",
+      "name": "Respond to Webhook1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Gemini - Section Only",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini - Section Only": {
+      "main": [
+        [
+          {
+            "node": "regeneratedSection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "regeneratedSection": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "b930c851-ed94-4b9f-9de9-2f2753eff6e4",
+  "meta": {
+    "instanceId": "4b8301ca2b2b3fa560dcd98180d93279b9bfc244d33142d2c88a85741da302ae"
+  },
+  "id": "rLRt7v0eylyTMPYh",
+  "tags": []
+}
