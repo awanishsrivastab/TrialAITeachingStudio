@@ -229,20 +229,6 @@ npm run build
 
 ---
 
-## 🎬 GIF Demos
-
-### Demo 1 — Lesson Generation Flow
-
-![Lesson Generation Demo](https://media.giphy.com/media/3o7aCSPqXE5C6T8tBC/giphy.gif)
-
-### Demo 2 — Regenerate & Share Workflow
-
-![Regenerate & Share Demo](https://media.giphy.com/media/l0HlNQ03J5JxX6lva/giphy.gif)
-
-> Replace these demo GIFs with your own recorded walkthroughs for a stronger portfolio presentation.
-
----
-
 ## 🚀 Deployment Links
 
 - 🌐 **Live Demo:** `https://your-app-domain.com`
@@ -281,11 +267,9 @@ npx wrangler deploy
 ## 👤 Creator Information
 
 - **Project Name:** AI Teaching Studio
-- **Creator:** Your Name
-- **Portfolio:** `https://your-portfolio.com`
-- **LinkedIn:** `https://linkedin.com/in/your-profile`
-- **GitHub:** `https://github.com/YOUR_USERNAME`
-- **Email:** `hello@your-domain.com`
+- **Creator:** Awanish Srivastav
+- **GitHub:** `https://github.com/awanishsrivastab`
+- **Email:** `awanish.srivastab@gmail.com`
 
 > Replace the placeholder creator details with your real portfolio links and contact information.
 
